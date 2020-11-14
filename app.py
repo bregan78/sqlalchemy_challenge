@@ -28,8 +28,7 @@ def welcome():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/<start><br/>"
-        f"/api/v1.0/<start>/<end>"
+        f"/api/v1.0/"
     )
 
 
@@ -69,6 +68,31 @@ def tobs():
     order_by(Measurement.date).all()
 
     return jsonify(results)
+
+@app.route("/api/v1.0/<start1>")
+def stats(start1):
+    min = session.query(func.min(Measurement.tobs)).\
+    filter(Measurement.date >= start1).first()
+    max = session.query(func.max(Measurement.tobs)).\
+    filter(Measurement.date >= start1).first()
+
+    avg = session.query(func.avg(Measurement.tobs)).\
+    filter(Measurement.date >= start1).first()
+
+    return jsonify(min, max, avg)
+
+@app.route("/api/v1.0/<start1>/<end>")
+def stats2(start1, end):
+    min2 = session.query(func.min(Measurement.tobs)).\
+    filter(Measurement.date.between(start1, end)).first()
+
+    max2 = session.query(func.max(Measurement.tobs)).\
+    filter(Measurement.date.between(start1, end)).first()
+
+    avg2 = session.query(func.avg(Measurement.tobs)).\
+    filter(Measurement.date.between(start1, end)).first()
+
+    return jsonify(min2, max2, avg2)
 
 
 if __name__ == "__main__":
